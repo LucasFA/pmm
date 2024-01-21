@@ -3,7 +3,7 @@
 prefix = "sudo"
 name = "apt"
 install_command = "install"
-update_command = "update"
+pre_upgrade_hook = "update"
 upgrade_command = "upgrade"
 
 [flatpak]

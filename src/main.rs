@@ -1,13 +1,20 @@
+use std::process::Command;
 use std::{fs, path::Path};
+use toml::map::Map;
 
 use serde::{Deserialize, Serialize};
+
+#[derive(Deserialize, IntoIterator)]
+struct Config {
+    pmlist: Map<String, PackageManager>,
+}
 
 #[derive(Deserialize, Serialize)]
 struct PackageManager {
     prefix: String,
     name: String,
     install_command: String,
-    update_command: String,
+    pre_upgrade_hook: String,
     upgrade_command: String,
 }
 
@@ -21,7 +28,14 @@ fn main() {
     let config = parse_toml_file(config_path);
 
     let printed = toml::to_string_pretty(&config).unwrap();
-    print!("{}", printed)
+    print!("{}", printed);
+
+    let config: Config = toml::from_str(&printed).unwrap();
+
+    for pm in config.iter() {
+        // let base =  pm.
+        Command::new("sh").arg("-c").arg(pm.prefix)
+    }
 }
 
 fn get_config_location() -> &'static Path {
