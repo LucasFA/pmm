@@ -17,15 +17,18 @@ fn main() {
     // use toml::Table;
     // let value = "foo = 'bar'".parse::<Table>().unwrap();
 
-    let config_path = Path::new("./thing_config.toml");
-
-    let config = get_config(config_path);
+    let config_path = get_config_location();
+    let config = parse_toml_file(config_path);
 
     let printed = toml::to_string_pretty(&config).unwrap();
     print!("{}", printed)
 }
 
-fn get_config(path: &Path) -> toml::Table {
+fn get_config_location() -> &'static Path {
+    return Path::new("./thing_config.toml");
+}
+
+fn parse_toml_file(path: &Path) -> toml::Table {
     let config_file = fs::read_to_string(path).expect("Could not find config file");
     let config_file = config_file.as_str();
 
@@ -35,6 +38,15 @@ fn get_config(path: &Path) -> toml::Table {
 
 #[cfg(test)]
 mod tests {
+    use crate::parse_toml_file;
+    use std::path::Path;
+
+    fn fake_config_path() -> &'static Path {
+        return &Path::new("./tests/thing_config.toml");
+    }
+
     #[test]
-    fn basic_toml_string() {}
+    fn parses_toml_file() {
+        let _fake_config = parse_toml_file(fake_config_path());
+    }
 }

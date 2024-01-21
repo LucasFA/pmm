@@ -1,0 +1,18 @@
+
+[apt]
+prefix = "sudo"
+name = "apt"
+install_command = "install"
+update_command = "update"
+upgrade_command = "upgrade"
+
+[flatpak]
+name = "flatpak"
+install_command = "install"
+upgrade_command = "update"
+
+[cargo]
+name = "cargo"
+install_command = "install"
+upgrade_command = "install-update --all"
+
