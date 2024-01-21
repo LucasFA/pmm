@@ -1,21 +1,58 @@
+use std::ops::Deref;
 use std::process::Command;
+use std::string::String;
 use std::{fs, path::Path};
 use toml::map::Map;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, IntoIterator)]
 struct Config {
     pmlist: Map<String, PackageManager>,
 }
 
+impl Deref for Config {
+    type Target = Map<String, PackageManager>;
+    fn deref(&self) -> &Self::Target {
+        &self.pmlist
+    }
+}
+
+// impl IntoIterator for Config {
+//     type Item = PackageManager;
+//     type IntoIter = toml::Table;
+//
+//     fn into_iter(self) -> Self::IntoIter {}
+// }
+
 #[derive(Deserialize, Serialize)]
 struct PackageManager {
-    prefix: String,
+    prefix: Option<String>,
     name: String,
+    cliname: String,
     install_command: String,
-    pre_upgrade_hook: String,
+    update: Option<String>,
     upgrade_command: String,
+}
+
+impl PackageManager {
+    fn base_name(&self) -> String {
+        let prefix = self.prefix.unwrap_or("".to_owned());
+        format!("{prefix} {0}", self.cliname)
+    }
+
+    pub fn update(&self) -> Option<String> {
+        if let None = self.update {
+            return None;
+        }
+
+        let update = self.update.unwrap();
+        Some(format!("{base} {update}", base = self.base_name()))
+    }
+    pub fn upgrade() {}
+}
+
+impl IntoIterator for PackageManager {
+    fn into_iter(self) -> Self::IntoIter {}
 }
 
 fn main() {
@@ -32,8 +69,7 @@ fn main() {
 
     let config: Config = toml::from_str(&printed).unwrap();
 
-    for pm in config.iter() {
-        // let base =  pm.
+    for pm in config {
         Command::new("sh").arg("-c").arg(pm.prefix)
     }
 }
